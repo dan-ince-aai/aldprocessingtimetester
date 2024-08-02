@@ -7,7 +7,7 @@ from pydub import AudioSegment
 import tempfile
 import os
 
-aai.settings.api_key = st.text_input("AssemblyAI API Key: ", value=st.secrets["AAI_API_KEY"], type="password")
+aai.settings.api_key = st.secrets["AAI_API_KEY"]
 transcriber = aai.Transcriber()
 
 @st.cache_data
