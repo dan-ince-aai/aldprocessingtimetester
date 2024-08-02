@@ -1,0 +1,5 @@
+assemblyai
+pandas
+plotly.express
+pydub
+tempfile
