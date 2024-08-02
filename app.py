@@ -79,7 +79,7 @@ def process_file(file, provided_language_code):
 
 st.title("ALD Processing Time Tester")
 
-uploaded_files = st.file_uploader("Choose audio files", accept_multiple_files=True, type=['mp3', 'wav', 'mp4', 'm4a'])
+uploaded_files = st.file_uploader("Upload audio files", accept_multiple_files=True, type=['mp3', 'wav', 'mp4', 'm4a'])
 
 if uploaded_files:
     file_language_codes = {}
@@ -101,12 +101,32 @@ if uploaded_files:
             df = pd.DataFrame(results)
             st.write(df)
 
+            mean_val = df["Processing Time As % Of File Duration"].mean()
+            std_val = df["Processing Time As % Of File Duration"].std()
+
             fig = px.scatter(df, x="File Length (seconds)", y="Processing Time As % Of File Duration", 
-                             color="Detected Language", hover_data=["File", "Actual Language"],
-                             title="Processing Time For ALD As % Of File Duration")
+                            color="Detected Language", hover_data=["File", "Actual Language"],
+                            title="Processing Time For ALD As % Of File Duration")
+
             fig.update_layout(yaxis_title="Processing Time As % Of File Duration")
+
+            fig.add_shape(
+                type="line",
+                x0=df["File Length (seconds)"].min(), x1=df["File Length (seconds)"].max(),
+                y0=mean_val + 1*std_val, y1=mean_val + 1*std_val,
+                line=dict(color="Red", width=2, dash="dashdot"),
+                name="Mean + 3 Std Dev"
+            )
+            fig.add_shape(
+                type="line",
+                x0=df["File Length (seconds)"].min(), x1=df["File Length (seconds)"].max(),
+                y0=mean_val - 1*std_val, y1=mean_val - 1*std_val,
+                line=dict(color="Red", width=2, dash="dashdot"),
+                name="Mean - 3 Std Dev"
+            )
+
             st.plotly_chart(fig)
         else:
-            st.warning("No valid results to display. Please check the uploaded files.")
+            st.warning("Results error")
 else:
-    st.write("Please upload some audio files to begin.")
+    st.write("Upload files.")
